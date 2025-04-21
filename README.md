@@ -2,9 +2,15 @@
 
 **Live App:** [Click here to work it! ](https://tinsusu.shinyapps.io/Quick-SingleCell-RNA-seq-Dashboard/)
 
-
-
 Hey you! Ready to dive into single-cell glam? Here’s how to *work* this **Seurat-powered** dashboard like the **science baddie** you are 
+
+### Is the Shiny App a Bit Slow?
+
+
+Just clone the GitHub repo and launch the app on your own machine:
+
+git clone https://github.com/Tinsusu/Visualize-SingleCell-Genomics-Dashboard.git
+cd Visualize-SingleCell-Genomics-Dashboard
 
 ---
 
