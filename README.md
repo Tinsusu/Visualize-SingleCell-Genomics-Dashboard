@@ -12,8 +12,6 @@ Just clone the GitHub repo and launch the app on your own machine:
 git clone https://github.com/Tinsusu/Visualize-SingleCell-Genomics-Dashboard.git
 
 cd Visualize-SingleCell-Genomics-Dashboard
-
-shiny::runApp()
 ---
 
 ##  1. Upload Your Seurat Object
