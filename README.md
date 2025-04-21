@@ -4,6 +4,16 @@
 
 Hey you! Ready to dive into single-cell glam? Here’s how to *work* this **Seurat-powered** dashboard like the **science baddie** you are 
 
+## 📸 App Preview
+
+Here’s a quick look at the app in action:
+
+![Single-cell RNAseq Dashboard preview](preview.png)
+
+
+
+
+
 ### Is the Shiny App a Bit Slow?
 
 
