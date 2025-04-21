@@ -121,6 +121,12 @@ server <- function(input, output, session) {
            }
          })
          
+         ######################################################################
+         ######## Create Render plot for qc #########
+         output$qc <- renderPlot({
+           create_violin_plot(obj)
+         })
+         
          
          ######### Downloaad plot ###################
          output$downloadFeaturePlot <- downloadHandler(
@@ -152,7 +158,15 @@ server <- function(input, output, session) {
            }
          )
          
-         
+         output$download_qc <- downloadHandler(
+           filename = function(){
+             paste0(input$metadata_col, '_QC', '.png')
+           },
+           content = function(file){
+             plot <- create_violin_plot(obj)
+             ggsave(filename=file, width = 10, height = 5, type = "cairo")
+           }
+         )
          
          ######################################################################
          ##### create renderplot for TSNE ###########
@@ -240,6 +254,32 @@ server <- function(input, output, session) {
            ),
            select = TRUE
          )
+         
+         ####### QC tab #####################################################
+         
+         insertTab(
+           inputId = "main_tabs",
+           tabPanel(
+             "QC",
+             fluidRow(
+               column(
+                 width = 12,  # full width
+                 plotOutput(outputId = 'qc'), 
+                 downloadButton("download_qc", "Download QC Plot")
+               )
+             ),
+             style = "height: 90%; width: 95%; padding-top: 5%;"
+           ),
+           select = TRUE
+         )
+         
+         
+         
+         
+         
+         
+         
+         
          
          remove_modal_spinner() ### then eenable run button
          shinyjs::enable("run")

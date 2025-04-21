@@ -16,6 +16,7 @@ library(markdown)
 library(ggthemes)
 library(grid)
 library(png)
+library(patchwork)
 
 #when we upload the file it will be kept in temp folder
 ## 1. check if it is rds extenstion
@@ -49,7 +50,7 @@ load_seurat_obj <- function(path){
   return(obj)
 }
 
-
+###################################################################################################
 create_metadata_UMAP <- function(obj, col){
   if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
     feature_value <- obj@meta.data[, col]
@@ -76,7 +77,7 @@ create_metadata_UMAP <- function(obj, col){
   return(umap)
 }
 
-
+####################################################################################################
 create_feature_plot <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
     FP <- FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE)
@@ -89,7 +90,7 @@ create_feature_plot <- function(obj, gene) {
   return(FP)
  }
 
- 
+#################################################################################################### 
 create_metadata_TSNE <- function(obj, col, dims = 1:10) {
   # Automatically run t-SNE if missing
   if (!("tsne" %in% names(obj@reductions))) {
@@ -122,6 +123,91 @@ create_metadata_TSNE <- function(obj, col, dims = 1:10) {
   }
   
   return(tsne)
+}
+
+
+##########################################################################################################
+create_violin_plot <- function(obj) {
+  library(Seurat)
+  library(ggplot2)
+  library(patchwork)
+  
+  # Features to plot
+  features <- c("nFeature_RNA", "nCount_RNA", "percent.mt")
+  
+  # Check which features are present in metadata
+  available_features <- features[features %in% colnames(obj@meta.data)]
+  
+  if (length(available_features) == 0) {
+    return(
+      ggplot() + 
+        theme_void() + 
+        geom_text(aes(x = 0.5, y = 0.5, label = "No QC metrics found"), 
+                  size = 20, color = "gray73", fontface = "bold") +
+        theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+    )
+  }
+  
+  # Make violin plots per QC feature, grouped by identities
+  plots <- lapply(available_features, function(feature) {
+    df <- data.frame(value = obj@meta.data[[feature]],
+                     ident = Idents(obj))
+    
+    ggplot(df, aes(x = ident, y = value)) +
+      geom_violin(fill = "skyblue", color = "gray30", scale = "width") +
+      stat_summary(fun = median, geom = "crossbar", width = 0.3, color = "red", fatten = 0) +
+      labs(title = feature, x = "Cluster", y = NULL) +
+      theme_minimal(base_size = 10) +
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(5, 5, 5, 5)
+      )
+  })
+  
+  # Combine all plots side by side
+  return(wrap_plots(plots, ncol = length(plots)))
+}
+create_violin_plot <- function(obj) {
+  library(Seurat)
+  library(ggplot2)
+  library(patchwork)
+  
+  # Features to plot
+  features <- c("nFeature_RNA", "nCount_RNA", "percent.mt")
+  
+  # Check which features are present in metadata
+  available_features <- features[features %in% colnames(obj@meta.data)]
+  
+  if (length(available_features) == 0) {
+    return(
+      ggplot() + 
+        theme_void() + 
+        geom_text(aes(x = 0.5, y = 0.5, label = "No QC metrics found"), 
+                  size = 20, color = "gray73", fontface = "bold") +
+        theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+    )
+  }
+  
+  # Make violin plots per QC feature, grouped by identities
+  plots <- lapply(available_features, function(feature) {
+    df <- data.frame(value = obj@meta.data[[feature]],
+                     ident = Idents(obj))
+    
+    ggplot(df, aes(x = ident, y = value)) +
+      geom_violin(fill = "skyblue", color = "gray30", scale = "width") +
+      stat_summary(fun = median, geom = "crossbar", width = 0.3, color = "red", fatten = 0) +
+      labs(title = feature, x = "Cluster", y = NULL) +
+      theme_minimal(base_size = 10) +
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(5, 5, 5, 5)
+      )
+  })
+  
+  # Combine all plots side by side
+  return(wrap_plots(plots, ncol = length(plots)))
 }
 
 
